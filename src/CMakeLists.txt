@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 2.4)
 option(BUILD_CXX_LIB
   "Build/install the pure c++ library? " ON)
 
-option(BUILD_PY_LIB 
+option(BUILD_PY_LIB
   "Build/install the python ocl library? " ON)
 
 
@@ -26,17 +26,16 @@ endif(NOT BUILD_PY_LIB)
 # thus we use now use -Wno-deprecated here.
 #
 if (CMAKE_BUILD_TOOL MATCHES "make")
-    MESSAGE(STATUS "setting gcc options: -W -Wall -Wundef  
+    MESSAGE(STATUS "setting gcc options: -W -Wall -Wundef
     -Wshadow -Winline -Wno-long-long -Wno-deprecated -Werror -pedantic-errors")
-    
+
     # -pedantic -W -Wall -Wundef -Wfloat-equal -Wshadow -Winline -Wno-long-long
-    add_definitions( -Werror -Wall -Wundef  -Wshadow  -Wno-long-long -Wno-deprecated -pedantic -pedantic-errors)
-    
+
     # some reasons why we don't enable certain errors:
     # this gives warning when comparing float/double with != or ==:  -Wfloat-equal
     # this gives warnings for BGL: -Winline
-    
-    
+
+
     add_definitions(-fPIC)
 endif (CMAKE_BUILD_TOOL MATCHES "make")
 
@@ -47,6 +46,7 @@ endif (CMAKE_BUILD_TOOL MATCHES "make")
 
 MESSAGE(STATUS " CMAKE_BUILD_TYPE  = " ${CMAKE_BUILD_TYPE})
 
+    add_definitions(-std=c++0x)
 if (CMAKE_BUILD_TYPE MATCHES "Profile")
     set(CMAKE_CXX_FLAGS_PROFILE -pg)
     MESSAGE(STATUS " CMAKE_CXX_FLAGS_PROFILE = " ${CMAKE_CXX_FLAGS_PROFILE})
@@ -58,6 +58,7 @@ if (CMAKE_BUILD_TYPE MATCHES "Release")
 endif (CMAKE_BUILD_TYPE MATCHES "Release")
 
 if (CMAKE_BUILD_TYPE MATCHES "Debug")
+    add_definitions( -Werror -Wall -Wundef  -Wshadow  -Wno-long-long -Wno-deprecated -pedantic -pedantic-errors)
     MESSAGE(STATUS " CMAKE_CXX_FLAGS_DEBUG = " ${CMAKE_CXX_FLAGS_DEBUG})
 endif (CMAKE_BUILD_TYPE MATCHES "Debug")
 
@@ -83,7 +84,7 @@ if(Boost_FOUND)
     MESSAGE(STATUS "Boost_INCLUDE_DIRS are: " ${Boost_INCLUDE_DIRS})
     MESSAGE(STATUS "Boost_PYTHON_LIBRARY is: " ${Boost_PYTHON_LIBRARY})
     MESSAGE(STATUS "boost_LIBRARY_DIRS is: " ${Boost_LIBRARY_DIRS})
-    MESSAGE(STATUS "Boost_LIBRARIES is: " ${Boost_LIBRARIES})    
+    MESSAGE(STATUS "Boost_LIBRARIES is: " ${Boost_LIBRARIES})
 endif()
 
 set( CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR} ) # Findqd.cmake is in this dir
@@ -98,9 +99,9 @@ message( STATUS "build type = " ${CMAKE_BUILD_TYPE})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 # a custom target that is always built
 add_custom_target(
-    version_string 
+    version_string
     ALL
-    DEPENDS ver_string 
+    DEPENDS ver_string
 )
 # creates version_string.hpp using cmake script
 add_custom_command(
@@ -130,7 +131,7 @@ set(OVD_SRC
 )
 
 set( OVD_INCLUDE_FILES
-    ${OpenVoronoi_SOURCE_DIR}/common/numeric.hpp  
+    ${OpenVoronoi_SOURCE_DIR}/common/numeric.hpp
     ${OpenVoronoi_SOURCE_DIR}/common/point.hpp
     ${OpenVoronoi_SOURCE_DIR}/common/halfedgediagram.hpp
     ${OpenVoronoi_SOURCE_DIR}/graph.hpp
@@ -153,11 +154,11 @@ add_library(
     STATIC
     ${OVD_SRC}
 )
-add_dependencies( 
+add_dependencies(
     libopenvoronoi
-    version_string 
+    version_string
 )
-set_target_properties(libopenvoronoi PROPERTIES PREFIX "") 
+set_target_properties(libopenvoronoi PROPERTIES PREFIX "")
 # this makes the Python module
 add_library(
     openvoronoi
@@ -166,7 +167,7 @@ add_library(
 )
 # MESSAGE(STATUS "linking python binary with boost: " ${Boost_PYTHON_LIBRARY})
 target_link_libraries(openvoronoi libopenvoronoi ${Boost_LIBRARIES} ${QD_LIBRARY}) #${Boost_PYTHON_LIBRARY})
-set_target_properties(openvoronoi PROPERTIES PREFIX "") 
+set_target_properties(openvoronoi PROPERTIES PREFIX "")
 
 
 #
@@ -192,7 +193,7 @@ endif (BUILD_PY_LIB)
 if (BUILD_CXX_LIB)
     install(
         TARGETS libopenvoronoi
-        LIBRARY 
+        LIBRARY
         DESTINATION lib/openvoronoi
         ARCHIVE DESTINATION lib/openvoronoi
         PERMISSIONS OWNER_READ OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE

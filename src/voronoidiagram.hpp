@@ -1,6 +1,6 @@
-/*  
+/*
  *  Copyright 2010-2011 Anders Wallin (anders.e.e.wallin "at" gmail.com)
- *  
+ *
  *  This file is part of OpenVoronoi.
  *
  *  OpenCAMlib is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 
 #include <queue>
 #include <set>
-#include <boost/tuple/tuple.hpp>
+#include <tuple>
 
 #include "common/point.hpp"
 #include "graph.hpp"
@@ -62,10 +62,10 @@ struct EdgeData {
 /// \brief Voronoi diagram.
 ///
 /// see http://en.wikipedia.org/wiki/Voronoi_diagram
-/// 
+///
 /// the dual of a voronoi diagram is the delaunay diagram(triangulation).
 ///  voronoi-faces are dual to delaunay-vertices.
-///  vornoi-vertices are dual to delaunay-faces 
+///  vornoi-vertices are dual to delaunay-faces
 ///  voronoi-edges are dual to delaunay-edges
 class VoronoiDiagram {
     public:
@@ -77,7 +77,7 @@ class VoronoiDiagram {
         VoronoiDiagram(double far, unsigned int n_bins);
         /// dtor
         virtual ~VoronoiDiagram();
-        /// insert a point site into the diagram 
+        /// insert a point site into the diagram
         /// returns an integer handle to the inserted point. use this integer when inserting lines/arcs
         int insert_point_site(const Point& p, int step=0);
         /// insert a line-segment site into the diagram
@@ -104,16 +104,16 @@ class VoronoiDiagram {
         /// initialize the diagram with three generators
         void initialize();
         HEVertex   find_seed_vertex(HEFace f, Site* site) const;
-        EdgeVector find_in_out_edges(); 
+        EdgeVector find_in_out_edges();
         EdgeData   find_edge_data(HEFace f, VertexVector startverts=VertexVector());
         EdgeVector find_split_edges(HEFace f, Point pt1, Point pt2);
         bool find_split_vertex(HEFace f, HEVertex& v);
-        
-        void augment_vertex_set( Site* site);        
+
+        void augment_vertex_set( Site* site);
         bool predicate_c4(HEVertex v);
         bool predicate_c5(HEVertex v);
         void mark_adjacent_faces(HEVertex v, Site* site);
-        void mark_vertex(HEVertex& v,  Site* site); 
+        void mark_vertex(HEVertex& v,  Site* site);
         void   add_vertices( Site* site );
         HEFace add_face(Site* site);
         void   add_edges(HEFace new_f1, HEFace f, HEFace new_f2 = 0);
@@ -121,7 +121,7 @@ class VoronoiDiagram {
         void   add_vertex_in_edge(HEVertex v, HEEdge e);
         void   add_separator(HEFace f, HEVertex endp, Site* s1, Site* s2);
         void   add_split_vertex(HEFace f, Site* s);
-        
+
         void repair_face( HEFace f );
         void remove_vertex_set();
         void remove_split_vertex(HEFace f);
@@ -156,7 +156,7 @@ class VoronoiDiagram {
         /// IN-vertices, i.e. to-be-deleted
         VertexVector v0;
         /// queue of vertices to be processed
-        VertexQueue vertexQueue; 
+        VertexQueue vertexQueue;
         std::map<int,HEVertex> vertex_map;
         bool debug;
 };
@@ -168,14 +168,14 @@ public:
     SplitPointError(VoronoiDiagram* v, HEEdge split_edge,Point pt1, Point pt2) :
     vd(v), edge(split_edge), p1(pt1), p2(pt2)
     {}
-    
+
     // find point on edge at t-value
     // compute a signed distance to the pt1-pt2 line
     double operator()(const double t) {
         Point p = vd->g[edge].point(t);
         // line: pt1 + u*(pt2-pt1) = p
         //   (p-pt1) dot (pt2-pt1) = u* (pt2-pt1) dot (pt2-pt1)
-        
+
         double u = (p-p1).dot(p2-p1) / ( (p2-p1).dot(p2-p1) );
         Point proj = p1 + u*(p2-p1);
         double dist = (proj-p).norm();
@@ -184,7 +184,7 @@ public:
             sign = +1;
         else
             sign = -1;
-            
+
         return sign*dist;
     }
 private:
