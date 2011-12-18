@@ -14,14 +14,22 @@ import os
 def drawLine(myscreen, p1, p2):
     myscreen.addActor( ovdvtk.Line( p1 = (p1.x,p1.y,0), p2=(p2.x,p2.y,0), color = ovdvtk.yellow ) )
 
+def writeLargeFrame( myscreen, w2if, lwr, n , zoom=1):
+    renderlarge = vtk.vtkRenderLargeImage()
+    renderlarge.SetInput( myscreen.ren )
+    renderlarge.SetMagnification(zoom)
+    writer = vtk.vtkPNGWriter()
+    writer.SetFileName("large_frame.png")
+    writer.SetInputConnection( renderlarge.GetOutputPort() )
+    writer.Write()
+    print "Wrote large frame!"
+
 def writeFrame( w2if, lwr, n ):
     w2if.Modified() 
     current_dir = os.getcwd()
     filename = current_dir + "/frames/vd500_zoomout"+ ('%05d' % n)+".png"
     lwr.SetFileName( filename )
-    #lwr.Write()
-
-
+    lwr.Write()
 
 def randomGenerators(far, Nmax):
     pradius = (1.0/math.sqrt(2))*far
@@ -45,8 +53,9 @@ if __name__ == "__main__":
 
     width=1920
     height=1080
-    width=2500
-    height=1500
+    pixmult=1
+    width=pixmult*1024
+    height=pixmult*1024
     myscreen = ovdvtk.VTKScreen(width, height)
     ovdvtk.drawOCLtext(myscreen)
     
@@ -80,7 +89,7 @@ if __name__ == "__main__":
     vod.drawVertexIndex=0
     vod.drawGenerators=0
     
-    Nmax = 100000
+    Nmax = 1000
     plist = randomGenerators(far, Nmax)    
     t_before = time.time() 
     n=0
@@ -101,12 +110,12 @@ if __name__ == "__main__":
         #print s
     hist = histogram(data)
     print hist
-
+    
     vod.setAll()
     myscreen.render()
             
-
-        
+    #writeFrame(  w2if, lwr, 2 )
+    writeLargeFrame( myscreen, w2if, lwr, 2 , zoom=20)
     print "PYTHON All DONE."
 
     myscreen.render()    
